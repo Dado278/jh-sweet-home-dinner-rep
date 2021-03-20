@@ -1,0 +1,113 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.home.title">People</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-people" [routerLink]="['/people/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span class="hidden-sm-down"  jhiTranslate="jhSweetHomeDinnerApplicationApp.people.home.createLabel">
+            Create a new People
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <form name="searchForm" class="form-inline">
+                <div class="input-group w-100 mt-3">
+                    <input type="text" class="form-control" [(ngModel)]="currentSearch" id="currentSearch" name="currentSearch" placeholder="{{ 'jhSweetHomeDinnerApplicationApp.people.home.search' | translate }}">
+
+                    <button class="input-group-append btn btn-info" (click)="search(currentSearch)">
+                        <fa-icon icon="search"></fa-icon>
+                    </button>
+
+                    <button class="input-group-append btn btn-danger" (click)="search('')" *ngIf="currentSearch">
+                        <fa-icon icon="trash-alt"></fa-icon>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="people?.length === 0">
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.home.notFound">No people found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="people && people.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+                    <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="username"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.username">Username</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="password"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.password">Password</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="freshman"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.freshman">Freshman</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="personType"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.personType">Person Type</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="email"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.email">Email</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="phoneNumber"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.phoneNumber">Phone Number</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="gender"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.gender">Gender</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="token"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.token">Token</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="createDate"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.createDate">Create Date</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="updateDate"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.updateDate">Update Date</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="infoInnkeeper.id"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.infoInnkeeper">Info Innkeeper</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let people of people ;trackBy: trackId">
+                    <td><a [routerLink]="['/people', people.id, 'view']">{{ people.id }}</a></td>
+                    <td>{{ people.username }}</td>
+                    <td>{{ people.password }}</td>
+                    <td>{{ people.freshman }}</td>
+                    <td jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.PersonType.' + people.personType }}">{{ people.personType }}</td>
+                    <td>{{ people.email }}</td>
+                    <td>{{ people.phoneNumber }}</td>
+                    <td jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.Gender.' + people.gender }}">{{ people.gender }}</td>
+                    <td>{{ people.token }}</td>
+                    <td>{{ people.createDate | date:'medium' }}</td>
+                    <td>{{ people.updateDate | date:'medium' }}</td>
+                    <td>
+                        <div *ngIf="people.infoInnkeeper">
+                            <a [routerLink]="['/info-innkeeper', people.infoInnkeeper?.id, 'view']" >{{ people.infoInnkeeper?.id }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/people', people.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/people', people.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(people)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="people && people.length > 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="ngbPaginationPage" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+    </div>
+</div>

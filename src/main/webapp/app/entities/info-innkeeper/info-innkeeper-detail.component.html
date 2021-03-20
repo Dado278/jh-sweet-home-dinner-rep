@@ -1,0 +1,58 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="infoInnkeeper">
+            <h2><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.detail.title">Info Innkeeper</span> {{ infoInnkeeper.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.nickname">Nickname</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.nickname }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.slogan">Slogan</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.slogan }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.description">Description</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.description }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.homePage">Home Page</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.homePage }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.latitude">Latitude</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.latitude }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.longitude">Longitude</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.longitude }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.address">Address</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.address }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.infoInnkeeper.services">Services</span></dt>
+                <dd>
+                    <span>{{ infoInnkeeper.services }}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/info-innkeeper', infoInnkeeper.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

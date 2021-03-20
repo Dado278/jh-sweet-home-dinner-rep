@@ -1,0 +1,9 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "PersonType": {
+      "null": "",
+      "CUSTOMER": "CUSTOMER",
+      "INNKEEPER": "INNKEEPER"
+    }
+  }
+}

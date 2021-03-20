@@ -1,0 +1,72 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="people">
+            <h2><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.detail.title">People</span> {{ people.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.username">Username</span></dt>
+                <dd>
+                    <span>{{ people.username }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.password">Password</span></dt>
+                <dd>
+                    <span>{{ people.password }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.freshman">Freshman</span></dt>
+                <dd>
+                    <span>{{ people.freshman }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.personType" [ngbTooltip]="'jhSweetHomeDinnerApplicationApp.people.help.personType' | translate">Person Type</span></dt>
+                <dd>
+                    <span jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.PersonType.' + people.personType }}">{{ people.personType }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.email">Email</span></dt>
+                <dd>
+                    <span>{{ people.email }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.phoneNumber">Phone Number</span></dt>
+                <dd>
+                    <span>{{ people.phoneNumber }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.gender">Gender</span></dt>
+                <dd>
+                    <span jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.Gender.' + people.gender }}">{{ people.gender }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.token">Token</span></dt>
+                <dd>
+                    <span>{{ people.token }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.createDate">Create Date</span></dt>
+                <dd>
+                    <span>{{ people.createDate }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.updateDate">Update Date</span></dt>
+                <dd>
+                    <span>{{ people.updateDate }}</span>
+                </dd>
+                <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.people.infoInnkeeper">Info Innkeeper</span></dt>
+                <dd>
+                    <div *ngIf="people.infoInnkeeper">
+                        <a [routerLink]="['/info-innkeeper', people.infoInnkeeper?.id, 'view']">{{ people.infoInnkeeper?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/people', people.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

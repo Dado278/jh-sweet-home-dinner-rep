@@ -1,0 +1,31 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "infoInnkeeper": {
+      "home": {
+        "title": "Info Innkeepers",
+        "createLabel": "Create a new Info Innkeeper",
+        "createOrEditLabel": "Create or edit a Info Innkeeper",
+        "search": "Search for Info Innkeeper",
+        "notFound": "No Info Innkeepers found"
+      },
+      "created": "A new Info Innkeeper is created with identifier {{ param }}",
+      "updated": "A Info Innkeeper is updated with identifier {{ param }}",
+      "deleted": "A Info Innkeeper is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Info Innkeeper {{ id }}?"
+      },
+      "detail": {
+        "title": "Info Innkeeper"
+      },
+      "nickname": "Nickname",
+      "slogan": "Slogan",
+      "description": "Description",
+      "homePage": "Home Page",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "address": "Address",
+      "services": "Services",
+      "sharedDinner": "Shared Dinner"
+    }
+  }
+}

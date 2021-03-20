@@ -1,0 +1,36 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "people": {
+      "home": {
+        "title": "People",
+        "createLabel": "Create a new People",
+        "createOrEditLabel": "Create or edit a People",
+        "search": "Search for People",
+        "notFound": "No People found"
+      },
+      "created": "A new People is created with identifier {{ param }}",
+      "updated": "A People is updated with identifier {{ param }}",
+      "deleted": "A People is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete People {{ id }}?"
+      },
+      "detail": {
+        "title": "People"
+      },
+      "username": "Username",
+      "password": "Password",
+      "freshman": "Freshman",
+      "personType": "Person Type",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "gender": "Gender",
+      "token": "Token",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "infoInnkeeper": "Info Innkeeper",
+      "help": {
+        "personType": "matricola"
+      }
+    }
+  }
+}

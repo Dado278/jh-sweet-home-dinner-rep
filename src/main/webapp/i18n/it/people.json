@@ -1,0 +1,36 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "people": {
+      "home": {
+        "title": "People",
+        "createLabel": "Genera un nuovo People",
+        "createOrEditLabel": "Genera o modifica un People",
+        "search": "Cerca People",
+        "notFound": "No People found"
+      },
+      "created": "&Egrave; stato generato un nuovo People con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato People identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato People con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare People {{ id }}?"
+      },
+      "detail": {
+        "title": "People"
+      },
+      "username": "Username",
+      "password": "Password",
+      "freshman": "Freshman",
+      "personType": "Person Type",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "gender": "Gender",
+      "token": "Token",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "infoInnkeeper": "Info Innkeeper",
+      "help": {
+        "personType": "matricola"
+      }
+    }
+  }
+}
