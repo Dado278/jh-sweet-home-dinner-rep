@@ -1,0 +1,22 @@
+version: '2'
+services:
+  jhsweethomedinnerapplication-app:
+    image: jhsweethomedinnerapplication
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,swagger
+      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://jhsweethomedinnerapplication-mysql:3306/jhsweethomedinnerapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
+      - SPRING_DATA_JEST_URI=http://jhsweethomedinnerapplication-elasticsearch:9200
+      - SPRING_ELASTICSEARCH_REST_URIS=http://jhsweethomedinnerapplication-elasticsearch:9200
+    ports:
+      - 8080:8080
+  jhsweethomedinnerapplication-mysql:
+    extends:
+      file: mysql.yml
+      service: jhsweethomedinnerapplication-mysql
+  jhsweethomedinnerapplication-elasticsearch:
+    extends:
+      file: elasticsearch.yml
+      service: jhsweethomedinnerapplication-elasticsearch
