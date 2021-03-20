@@ -1,0 +1,70 @@
+
+entity People {
+	id Long,
+	username String,
+	password String,
+    freshman Long, /** matricola */
+    personType PersonType,
+	email String,
+	phoneNumber String,
+    gender Gender,
+    token String,
+	createDate Instant,
+    updateDate Instant
+}
+
+enum PersonType {
+    CUSTOMER, INNKEEPER
+}
+
+enum Gender {
+    M, F
+}
+
+entity InfoInnkeeper {
+	id Long,
+    nickname String,
+    slogan String,
+	description String,
+    homePage String,
+    latitude String,
+    longitude String,
+    address String,
+    services String
+}
+
+entity SharedDinner {
+	id Long,
+    createDate Instant,
+    updateDate Instant,
+    title String, // dinner name
+    slogan String,
+	description String,
+    homePage String,
+    latitude String,
+    longitude String,
+    address String,
+    costmin Integer,
+    costmax Integer
+}
+
+relationship OneToOne {
+	People{infoInnkeeper} to InfoInnkeeper
+}
+
+relationship OneToMany {
+	InfoInnkeeper{sharedDinner} to SharedDinner
+}
+
+// Set pagination options
+paginate SharedDinner with infinite-scroll
+paginate People, InfoInnkeeper with pagination
+
+// Use Data Transfer Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl //except Employee, Job
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
