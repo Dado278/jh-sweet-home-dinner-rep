@@ -1,0 +1,113 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-customer-heading" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.home.createOrEditLabel">Create or edit a Customer</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.nickname" for="field_nickname">Nickname</label>
+                    <input type="text" class="form-control" name="nickname" id="field_nickname"
+                           formControlName="nickname"/>
+                    <div *ngIf="editForm.get('nickname')!.invalid && (editForm.get('nickname')!.dirty || editForm.get('nickname')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('nickname')?.errors?.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('nickname')?.errors?.pattern" jhiTranslate="entity.validation.pattern" [translateValues]="{ pattern: 'Nickname' }">
+                            This field should follow pattern for "Nickname".
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.freshman" for="field_freshman">Freshman</label>
+                    <input type="number" class="form-control" name="freshman" id="field_freshman"
+                           formControlName="freshman"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.email" for="field_email" [ngbTooltip]="'jhSweetHomeDinnerApplicationApp.customer.help.email' | translate">Email</label>
+                    <input type="text" class="form-control" name="email" id="field_email"
+                           formControlName="email"/>
+                    <div *ngIf="editForm.get('email')!.invalid && (editForm.get('email')!.dirty || editForm.get('email')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('email')?.errors?.pattern" jhiTranslate="entity.validation.pattern" [translateValues]="{ pattern: 'Email' }">
+                            This field should follow pattern for "Email".
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.phoneNumber" for="field_phoneNumber">Phone Number</label>
+                    <input type="text" class="form-control" name="phoneNumber" id="field_phoneNumber"
+                           formControlName="phoneNumber"/>
+                    <div *ngIf="editForm.get('phoneNumber')!.invalid && (editForm.get('phoneNumber')!.dirty || editForm.get('phoneNumber')!.touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('phoneNumber')?.errors?.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                        </small>
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('phoneNumber')?.errors?.pattern" jhiTranslate="entity.validation.pattern" [translateValues]="{ pattern: 'Phone Number' }">
+                            This field should follow pattern for "Phone Number".
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.gender" for="field_gender">Gender</label>
+                    <select class="form-control" name="gender" formControlName="gender" id="field_gender">
+                        <option value="M">{{ 'jhSweetHomeDinnerApplicationApp.Gender.M' | translate }}</option>
+                        <option value="F">{{ 'jhSweetHomeDinnerApplicationApp.Gender.F' | translate }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.createDate" for="field_createDate">Create Date</label>
+                    <div class="d-flex">
+                        <input id="field_createDate" type="datetime-local" class="form-control" name="createDate" formControlName="createDate" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.updateDate" for="field_updateDate">Update Date</label>
+                    <div class="d-flex">
+                        <input id="field_updateDate" type="datetime-local" class="form-control" name="updateDate" formControlName="updateDate" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.internalUser" for="field_internalUser">Internal User</label>
+                    <select class="form-control" id="field_internalUser" name="internalUser" formControlName="internalUser">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="userOption.id === editForm.get('internalUser')!.value?.id ? editForm.get('internalUser')!.value : userOption" *ngFor="let userOption of users; trackBy: trackById">{{ userOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.sharedDinner" for="field_sharedDinners">Shared Dinner</label>
+                    <select class="form-control" id="field_sharedDinners" multiple name="sharedDinners" formControlName="sharedDinners">
+                        <option [ngValue]="getSelected(editForm.get('sharedDinners')!.value, sharedDinnerOption)" *ngFor="let sharedDinnerOption of shareddinners; trackBy: trackById">{{ sharedDinnerOption.id }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

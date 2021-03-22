@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    <!--
+        Added the constraints for entity SharedDinner.
+    -->
+    <changeSet id="20210322191819-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="innkeeper_id"
+                                 baseTableName="shared_dinner"
+                                 constraintName="fk_shared_dinner_innkeeper_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="innkeeper"/>
+
+    </changeSet>
+</databaseChangeLog>
