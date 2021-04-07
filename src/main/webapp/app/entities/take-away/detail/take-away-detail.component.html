@@ -1,0 +1,82 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="takeAway">
+      <h2 data-cy="takeAwayDetailsHeading"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.detail.title">Take Away</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.id">Id</span></dt>
+        <dd>
+          <span>{{ takeAway.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.createDate">Create Date</span></dt>
+        <dd>
+          <span>{{ takeAway.createDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.updateDate">Update Date</span></dt>
+        <dd>
+          <span>{{ takeAway.updateDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.dish">Dish</span></dt>
+        <dd>
+          <span>{{ takeAway.dish }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.description">Description</span></dt>
+        <dd>
+          <span>{{ takeAway.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.ingredients">Ingredients</span></dt>
+        <dd>
+          <span>{{ takeAway.ingredients }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.allergens">Allergens</span></dt>
+        <dd>
+          <span>{{ takeAway.allergens }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.latitude">Latitude</span></dt>
+        <dd>
+          <span>{{ takeAway.latitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.longitude">Longitude</span></dt>
+        <dd>
+          <span>{{ takeAway.longitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.address">Address</span></dt>
+        <dd>
+          <span>{{ takeAway.address }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.costmin">Costmin</span></dt>
+        <dd>
+          <span>{{ takeAway.costmin }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.costmax">Costmax</span></dt>
+        <dd>
+          <span>{{ takeAway.costmax }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.tags">Tags</span></dt>
+        <dd>
+          <span>{{ takeAway.tags }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.innkeeper">Innkeeper</span></dt>
+        <dd>
+          <div *ngIf="takeAway.innkeeper">
+            <a [routerLink]="['/innkeeper', takeAway.innkeeper?.id, 'view']">{{ takeAway.innkeeper?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/take-away', takeAway.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

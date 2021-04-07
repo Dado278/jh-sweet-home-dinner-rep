@@ -1,0 +1,188 @@
+<div>
+  <h2 id="page-heading" data-cy="InnkeeperHeading">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.home.title">Innkeepers</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="reset()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.home.refreshListLabel">Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-innkeeper"
+        [routerLink]="['/innkeeper/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span class="hidden-sm-down" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.home.createLabel">
+          Create a new Innkeeper
+        </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <form name="searchForm" class="form-inline">
+        <div class="input-group w-100 mt-3">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentSearch"
+            id="currentSearch"
+            name="currentSearch"
+            placeholder="{{ 'jhSweetHomeDinnerApplicationApp.innkeeper.home.search' | translate }}"
+          />
+
+          <button class="input-group-append btn btn-info" (click)="search(currentSearch)">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+
+          <button class="input-group-append btn btn-danger" (click)="search('')" *ngIf="currentSearch">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="innkeepers?.length === 0">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.home.notFound">No innkeepers found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="innkeepers && innkeepers.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="reset.bind(this)">
+          <th scope="col" jhiSortBy="id">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.id">Id</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="nickname">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.nickname">Nickname</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="avatarImageBlob">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarImageBlob">Avatar Image Blob</span>
+            <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="avatarTextBlob">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarTextBlob">Avatar Text Blob</span>
+            <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="freshman">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.freshman">Freshman</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="email">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.email">Email</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="phoneNumber">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.phoneNumber">Phone Number</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="gender">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.gender">Gender</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="slogan">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.slogan">Slogan</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="description">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.description">Description</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="homePage">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.homePage">Home Page</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="latitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.latitude">Latitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="longitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.longitude">Longitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="address">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.address">Address</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="services">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.services">Services</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="createDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.createDate">Create Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="updateDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.updateDate">Update Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="internalUser.id">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.internalUser">Internal User</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody infinite-scroll (scrolled)="loadPage(page + 1)" [infiniteScrollDisabled]="page >= links['last']" [infiniteScrollDistance]="0">
+        <tr *ngFor="let innkeeper of innkeepers; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/innkeeper', innkeeper.id, 'view']">{{ innkeeper.id }}</a>
+          </td>
+          <td>{{ innkeeper.nickname }}</td>
+          <td>
+            <a *ngIf="innkeeper.avatarImageBlob" (click)="openFile(innkeeper.avatarImageBlob, innkeeper.avatarImageBlobContentType)">
+              <img
+                [src]="'data:' + innkeeper.avatarImageBlobContentType + ';base64,' + innkeeper.avatarImageBlob"
+                style="max-height: 30px"
+                alt="innkeeper image"
+              />
+            </a>
+            <span *ngIf="innkeeper.avatarImageBlob"
+              >{{ innkeeper.avatarImageBlobContentType }}, {{ byteSize(innkeeper.avatarImageBlob) }}</span
+            >
+          </td>
+          <td>{{ innkeeper.avatarTextBlob }}</td>
+          <td>{{ innkeeper.freshman }}</td>
+          <td>{{ innkeeper.email }}</td>
+          <td>{{ innkeeper.phoneNumber }}</td>
+          <td jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.Gender.' + innkeeper.gender }}">{{ innkeeper.gender }}</td>
+          <td>{{ innkeeper.slogan }}</td>
+          <td>{{ innkeeper.description }}</td>
+          <td>{{ innkeeper.homePage }}</td>
+          <td>{{ innkeeper.latitude }}</td>
+          <td>{{ innkeeper.longitude }}</td>
+          <td>{{ innkeeper.address }}</td>
+          <td>{{ innkeeper.services }}</td>
+          <td>{{ innkeeper.createDate | formatMediumDatetime }}</td>
+          <td>{{ innkeeper.updateDate | formatMediumDatetime }}</td>
+          <td>
+            {{ innkeeper.internalUser?.id }}
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/innkeeper', innkeeper.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/innkeeper', innkeeper.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(innkeeper)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
