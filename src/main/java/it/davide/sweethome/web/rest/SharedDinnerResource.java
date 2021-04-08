@@ -24,9 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import tech.jhipster.web.util.HeaderUtil;
-import tech.jhipster.web.util.PaginationUtil;
-import tech.jhipster.web.util.ResponseUtil;
+//import tech.jhipster.web.util.HeaderUtil;
+//import tech.jhipster.web.util.PaginationUtil;
+//import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link it.davide.sweethome.domain.SharedDinner}.
