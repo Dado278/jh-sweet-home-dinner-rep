@@ -1,0 +1,37 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "takeAway": {
+      "home": {
+        "title": "TakeAways",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Genera un nuovo Take Away",
+        "createOrEditLabel": "Genera o modifica un Take Away",
+        "search": "Cerca Take Away",
+        "notFound": "No Take Aways found"
+      },
+      "created": "&Egrave; stato generato un nuovo Take Away con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Take Away identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Take Away con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Take Away {{ id }}?"
+      },
+      "detail": {
+        "title": "Take Away"
+      },
+      "id": "Id",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "dish": "Dish",
+      "description": "Description",
+      "ingredients": "Ingredients",
+      "allergens": "Allergens",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "address": "Address",
+      "costmin": "Costmin",
+      "costmax": "Costmax",
+      "tags": "Tags",
+      "innkeeper": "Innkeeper"
+    }
+  }
+}

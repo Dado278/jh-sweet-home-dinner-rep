@@ -1,0 +1,179 @@
+<div>
+  <h2 id="page-heading" data-cy="TakeAwayHeading">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.home.title">Take Aways</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.home.refreshListLabel">Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-take-away"
+        [routerLink]="['/take-away/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span class="hidden-sm-down" jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.home.createLabel">
+          Create a new Take Away
+        </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <form name="searchForm" class="form-inline">
+        <div class="input-group w-100 mt-3">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentSearch"
+            id="currentSearch"
+            name="currentSearch"
+            placeholder="{{ 'jhSweetHomeDinnerApplicationApp.takeAway.home.search' | translate }}"
+          />
+
+          <button class="input-group-append btn btn-info" (click)="search(currentSearch)">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+
+          <button class="input-group-append btn btn-danger" (click)="search('')" *ngIf="currentSearch">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="takeAways?.length === 0">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.home.notFound">No takeAways found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="takeAways && takeAways.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+          <th scope="col" jhiSortBy="id">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.id">Id</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="createDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.createDate">Create Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="updateDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.updateDate">Update Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="dish">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.dish">Dish</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="description">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.description">Description</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="ingredients">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.ingredients">Ingredients</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="allergens">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.allergens">Allergens</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="latitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.latitude">Latitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="longitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.longitude">Longitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="address">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.address">Address</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="costmin">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.costmin">Costmin</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="costmax">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.costmax">Costmax</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="tags">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.tags">Tags</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="innkeeper.dish">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.takeAway.innkeeper">Innkeeper</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let takeAway of takeAways; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/take-away', takeAway.id, 'view']">{{ takeAway.id }}</a>
+          </td>
+          <td>{{ takeAway.createDate | formatMediumDatetime }}</td>
+          <td>{{ takeAway.updateDate | formatMediumDatetime }}</td>
+          <td>{{ takeAway.dish }}</td>
+          <td>{{ takeAway.description }}</td>
+          <td>{{ takeAway.ingredients }}</td>
+          <td>{{ takeAway.allergens }}</td>
+          <td>{{ takeAway.latitude }}</td>
+          <td>{{ takeAway.longitude }}</td>
+          <td>{{ takeAway.address }}</td>
+          <td>{{ takeAway.costmin }}</td>
+          <td>{{ takeAway.costmax }}</td>
+          <td>{{ takeAway.tags }}</td>
+          <td>
+            <div *ngIf="takeAway.innkeeper">
+              <a [routerLink]="['/innkeeper', takeAway.innkeeper?.id, 'view']">{{ takeAway.innkeeper?.dish }}</a>
+            </div>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/take-away', takeAway.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/take-away', takeAway.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(takeAway)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="takeAways && takeAways.length > 0">
+    <div class="row justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+    </div>
+
+    <div class="row justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>

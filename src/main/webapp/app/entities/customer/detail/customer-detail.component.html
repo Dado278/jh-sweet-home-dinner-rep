@@ -1,0 +1,73 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="customer">
+      <h2 data-cy="customerDetailsHeading"><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.detail.title">Customer</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.id">Id</span></dt>
+        <dd>
+          <span>{{ customer.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.nickname">Nickname</span></dt>
+        <dd>
+          <span>{{ customer.nickname }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.freshman">Freshman</span></dt>
+        <dd>
+          <span>{{ customer.freshman }}</span>
+        </dd>
+        <dt>
+          <span
+            jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.email"
+            [ngbTooltip]="'jhSweetHomeDinnerApplicationApp.customer.help.email' | translate"
+            >Email</span
+          >
+        </dt>
+        <dd>
+          <span>{{ customer.email }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.phoneNumber">Phone Number</span></dt>
+        <dd>
+          <span>{{ customer.phoneNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.gender">Gender</span></dt>
+        <dd>
+          <span jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.Gender.' + customer.gender }}">{{ customer.gender }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.createDate">Create Date</span></dt>
+        <dd>
+          <span>{{ customer.createDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.updateDate">Update Date</span></dt>
+        <dd>
+          <span>{{ customer.updateDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.internalUser">Internal User</span></dt>
+        <dd>
+          <span>{{ customer.internalUser?.nickname }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.customer.sharedDinner">Shared Dinner</span></dt>
+        <dd>
+          <span *ngFor="let sharedDinner of customer.sharedDinners; let last = last">
+            <a [routerLink]="['/shared-dinner', sharedDinner?.id, 'view']">{{ sharedDinner.nickname }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/customer', customer.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
