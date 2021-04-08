@@ -1,0 +1,106 @@
+
+entity Customer {
+	id Long required unique,
+	nickname String required unique pattern(/^[a-z0-9_-]{3,16}$/),
+    //avatarImageBlob ImageBlob maxbytes(5500),
+    //avatarTextBlob TextBlob,
+    freshman Long unique, /** matricola */
+	email String pattern(/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/),
+	phoneNumber String required pattern(/^[0-9]{9,15}$/),
+    gender Gender,
+	createDate Instant,
+    updateDate Instant
+}
+
+entity Innkeeper {
+	id Long required unique,
+	nickname String required unique pattern(/^[a-z0-9_-]{3,16}$/),
+    //avatarImageBlob ImageBlob maxbytes(5500),
+    //avatarTextBlob TextBlob,
+    freshman Long unique, /** matricola */
+	email String required pattern(/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/),
+	phoneNumber String required pattern(/^[0-9]{9,15}$/),
+    gender Gender,
+    slogan String,
+	description String required,
+    homePage String pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/),
+    latitude String,
+    longitude String,
+    address String required,
+    services String,
+    createDate Instant,
+    updateDate Instant
+}
+
+enum Gender {
+    M, F
+}
+
+entity SharedDinner {
+	id Long required unique,
+    createDate Instant,
+    updateDate Instant,
+    title String required, // dinner name
+    slogan String,
+	description String required,
+    dinnerDate LocalDate,
+    homePage String pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/),
+    latitude String,
+    longitude String,
+    address String required,
+    costmin Double required,
+    costmax Double required
+}
+
+entity TakeAway {
+	id Long required unique,
+    createDate Instant,
+    updateDate Instant,
+    dish String required minlength(3) maxlength(50), // dish name
+	description String required,
+    ingredients String required,
+    allergens String required,
+    latitude String,
+    longitude String,
+    address String required,
+    costmin Double required,
+    costmax Double required,
+    tags String
+}
+
+relationship OneToOne {
+  Customer{internalUser(nickname)} to User
+}
+
+relationship OneToOne {
+  Innkeeper{internalUser(nickname)} to User
+}
+
+relationship OneToMany {
+	Innkeeper{sharedDinner(nickname)} to SharedDinner{innkeeper(title)}
+}
+
+relationship OneToMany {
+	Innkeeper{takeAway(nickname)} to TakeAway{innkeeper(dish)}
+}
+
+relationship ManyToMany {
+	Customer{sharedDinner(nickname)} to SharedDinner{customer(title)}
+}
+
+// Set pagination options
+paginate SharedDinner, TakeAway with pagination
+paginate Customer, Innkeeper with infinite-scroll
+
+// Use Data Transfer Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl //except Employee, Job
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
+
+// info
+// regex: https://code.tutsplus.com/it/tutorials/8-regular-expressions-you-should-know--net-6149
+// phone number: https://www.3cx.it/blog/comunicazione-unificata/che-cose-e164/
