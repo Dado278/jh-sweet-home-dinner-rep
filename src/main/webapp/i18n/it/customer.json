@@ -1,0 +1,36 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "customer": {
+      "home": {
+        "title": "Customers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Genera un nuovo Customer",
+        "createOrEditLabel": "Genera o modifica un Customer",
+        "search": "Cerca Customer",
+        "notFound": "No Customers found"
+      },
+      "created": "&Egrave; stato generato un nuovo Customer con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Customer identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Customer con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Customer {{ id }}?"
+      },
+      "detail": {
+        "title": "Customer"
+      },
+      "id": "Id",
+      "nickname": "Nickname",
+      "freshman": "Freshman",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "gender": "Gender",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "internalUser": "Internal User",
+      "sharedDinner": "Shared Dinner",
+      "help": {
+        "email": "matricola"
+      }
+    }
+  }
+}

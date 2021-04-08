@@ -1,0 +1,84 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="sharedDinner">
+      <h2 data-cy="sharedDinnerDetailsHeading">
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.detail.title">Shared Dinner</span>
+      </h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.id">Id</span></dt>
+        <dd>
+          <span>{{ sharedDinner.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.createDate">Create Date</span></dt>
+        <dd>
+          <span>{{ sharedDinner.createDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.updateDate">Update Date</span></dt>
+        <dd>
+          <span>{{ sharedDinner.updateDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.title">Title</span></dt>
+        <dd>
+          <span>{{ sharedDinner.title }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.slogan">Slogan</span></dt>
+        <dd>
+          <span>{{ sharedDinner.slogan }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.description">Description</span></dt>
+        <dd>
+          <span>{{ sharedDinner.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.dinnerDate">Dinner Date</span></dt>
+        <dd>
+          <span>{{ sharedDinner.dinnerDate | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.homePage">Home Page</span></dt>
+        <dd>
+          <span>{{ sharedDinner.homePage }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.latitude">Latitude</span></dt>
+        <dd>
+          <span>{{ sharedDinner.latitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.longitude">Longitude</span></dt>
+        <dd>
+          <span>{{ sharedDinner.longitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.address">Address</span></dt>
+        <dd>
+          <span>{{ sharedDinner.address }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.costmin">Costmin</span></dt>
+        <dd>
+          <span>{{ sharedDinner.costmin }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.costmax">Costmax</span></dt>
+        <dd>
+          <span>{{ sharedDinner.costmax }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.innkeeper">Innkeeper</span></dt>
+        <dd>
+          <div *ngIf="sharedDinner.innkeeper">
+            <a [routerLink]="['/innkeeper', sharedDinner.innkeeper?.id, 'view']">{{ sharedDinner.innkeeper?.title }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/shared-dinner', sharedDinner.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
