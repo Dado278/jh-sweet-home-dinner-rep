@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity Innkeeper.
+    -->
+    <changeSet id="20210408173523-1" author="jhipster">
+        <createTable tableName="innkeeper">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nickname" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="ux_innkeeper__nickname" />
+            </column>
+            <column name="avatar_image_blob" type="longblob">
+                <constraints nullable="true" />
+            </column>
+            <column name="avatar_image_blob_content_type" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="avatar_text_blob" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="freshman" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_innkeeper__freshman" />
+            </column>
+            <column name="email" type="varchar(255)" remarks="matricola">
+                <constraints nullable="false" />
+            </column>
+            <column name="phone_number" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="gender" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="slogan" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="description" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="home_page" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="latitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="longitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="address" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="services" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="create_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="update_date" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="internal_user_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_innkeeper__internal_user_id" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="innkeeper" columnName="create_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="innkeeper" columnName="update_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20210408173523-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/innkeeper.csv"
+                  separator=";"
+                  tableName="innkeeper">
+            <column name="id" type="numeric"/>
+            <column name="nickname" type="string"/>
+            <column name="avatar_image_blob" type="blob"/>
+            <column name="avatar_image_blob_content_type" type="string"/>
+            <column name="avatar_text_blob" type="clob"/>
+            <column name="freshman" type="numeric"/>
+            <column name="email" type="string"/>
+            <column name="phone_number" type="string"/>
+            <column name="gender" type="string"/>
+            <column name="slogan" type="string"/>
+            <column name="description" type="string"/>
+            <column name="home_page" type="string"/>
+            <column name="latitude" type="string"/>
+            <column name="longitude" type="string"/>
+            <column name="address" type="string"/>
+            <column name="services" type="string"/>
+            <column name="create_date" type="${datetimeType}"/>
+            <column name="update_date" type="${datetimeType}"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
