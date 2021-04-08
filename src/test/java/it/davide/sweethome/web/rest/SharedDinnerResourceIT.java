@@ -1,5 +1,33 @@
 package it.davide.sweethome.web.rest;
 
+import it.davide.sweethome.JhSweetHomeDinnerApplicationApp;
+import it.davide.sweethome.domain.SharedDinner;
+import it.davide.sweethome.repository.SharedDinnerRepository;
+import it.davide.sweethome.repository.search.SharedDinnerSearchRepository;
+import it.davide.sweethome.service.SharedDinnerService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
@@ -7,41 +35,14 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import it.davide.sweethome.IntegrationTest;
-import it.davide.sweethome.domain.SharedDinner;
-import it.davide.sweethome.repository.SharedDinnerRepository;
-import it.davide.sweethome.repository.search.SharedDinnerSearchRepository;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  * Integration tests for the {@link SharedDinnerResource} REST controller.
  */
-@IntegrationTest
+@SpringBootTest(classes = JhSweetHomeDinnerApplicationApp.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
-class SharedDinnerResourceIT {
+public class SharedDinnerResourceIT {
 
     private static final Instant DEFAULT_CREATE_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_CREATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -61,8 +62,8 @@ class SharedDinnerResourceIT {
     private static final LocalDate DEFAULT_DINNER_DATE = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_DINNER_DATE = LocalDate.now(ZoneId.systemDefault());
 
-    private static final String DEFAULT_HOME_PAGE = "https://p8y2vb.kgigmn6e1";
-    private static final String UPDATED_HOME_PAGE = "7i-i2...ijK.4W6IWau1ua1/";
+    private static final String DEFAULT_HOME_PAGE = "4.6.umwbxd3NKK/";
+    private static final String UPDATED_HOME_PAGE = "d7y244.crk";
 
     private static final String DEFAULT_LATITUDE = "AAAAAAAAAA";
     private static final String UPDATED_LATITUDE = "BBBBBBBBBB";
@@ -79,15 +80,11 @@ class SharedDinnerResourceIT {
     private static final Double DEFAULT_COSTMAX = 1D;
     private static final Double UPDATED_COSTMAX = 2D;
 
-    private static final String ENTITY_API_URL = "/api/shared-dinners";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/_search/shared-dinners";
-
-    private static Random random = new Random();
-    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private SharedDinnerRepository sharedDinnerRepository;
+
+    @Autowired
+    private SharedDinnerService sharedDinnerService;
 
     /**
      * This repository is mocked in the it.davide.sweethome.repository.search test package.
@@ -127,7 +124,6 @@ class SharedDinnerResourceIT {
             .costmax(DEFAULT_COSTMAX);
         return sharedDinner;
     }
-
     /**
      * Create an updated entity for this test.
      *
@@ -158,11 +154,12 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void createSharedDinner() throws Exception {
+    public void createSharedDinner() throws Exception {
         int databaseSizeBeforeCreate = sharedDinnerRepository.findAll().size();
         // Create the SharedDinner
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isCreated());
 
         // Validate the SharedDinner in the database
@@ -188,15 +185,16 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void createSharedDinnerWithExistingId() throws Exception {
+    public void createSharedDinnerWithExistingId() throws Exception {
+        int databaseSizeBeforeCreate = sharedDinnerRepository.findAll().size();
+
         // Create the SharedDinner with an existing ID
         sharedDinner.setId(1L);
 
-        int databaseSizeBeforeCreate = sharedDinnerRepository.findAll().size();
-
         // An entity with an existing ID cannot be created, so this API call must fail
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         // Validate the SharedDinner in the database
@@ -207,17 +205,20 @@ class SharedDinnerResourceIT {
         verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
     }
 
+
     @Test
     @Transactional
-    void checkTitleIsRequired() throws Exception {
+    public void checkTitleIsRequired() throws Exception {
         int databaseSizeBeforeTest = sharedDinnerRepository.findAll().size();
         // set the field null
         sharedDinner.setTitle(null);
 
         // Create the SharedDinner, which fails.
 
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
@@ -226,15 +227,17 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void checkDescriptionIsRequired() throws Exception {
+    public void checkDescriptionIsRequired() throws Exception {
         int databaseSizeBeforeTest = sharedDinnerRepository.findAll().size();
         // set the field null
         sharedDinner.setDescription(null);
 
         // Create the SharedDinner, which fails.
 
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
@@ -243,15 +246,17 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void checkAddressIsRequired() throws Exception {
+    public void checkAddressIsRequired() throws Exception {
         int databaseSizeBeforeTest = sharedDinnerRepository.findAll().size();
         // set the field null
         sharedDinner.setAddress(null);
 
         // Create the SharedDinner, which fails.
 
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
@@ -260,15 +265,17 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void checkCostminIsRequired() throws Exception {
+    public void checkCostminIsRequired() throws Exception {
         int databaseSizeBeforeTest = sharedDinnerRepository.findAll().size();
         // set the field null
         sharedDinner.setCostmin(null);
 
         // Create the SharedDinner, which fails.
 
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
@@ -277,15 +284,17 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void checkCostmaxIsRequired() throws Exception {
+    public void checkCostmaxIsRequired() throws Exception {
         int databaseSizeBeforeTest = sharedDinnerRepository.findAll().size();
         // set the field null
         sharedDinner.setCostmax(null);
 
         // Create the SharedDinner, which fails.
 
-        restSharedDinnerMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
+
+        restSharedDinnerMockMvc.perform(post("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
@@ -294,13 +303,12 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void getAllSharedDinners() throws Exception {
+    public void getAllSharedDinners() throws Exception {
         // Initialize the database
         sharedDinnerRepository.saveAndFlush(sharedDinner);
 
         // Get all the sharedDinnerList
-        restSharedDinnerMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
+        restSharedDinnerMockMvc.perform(get("/api/shared-dinners?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(sharedDinner.getId().intValue())))
@@ -317,16 +325,15 @@ class SharedDinnerResourceIT {
             .andExpect(jsonPath("$.[*].costmin").value(hasItem(DEFAULT_COSTMIN.doubleValue())))
             .andExpect(jsonPath("$.[*].costmax").value(hasItem(DEFAULT_COSTMAX.doubleValue())));
     }
-
+    
     @Test
     @Transactional
-    void getSharedDinner() throws Exception {
+    public void getSharedDinner() throws Exception {
         // Initialize the database
         sharedDinnerRepository.saveAndFlush(sharedDinner);
 
         // Get the sharedDinner
-        restSharedDinnerMockMvc
-            .perform(get(ENTITY_API_URL_ID, sharedDinner.getId()))
+        restSharedDinnerMockMvc.perform(get("/api/shared-dinners/{id}", sharedDinner.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(sharedDinner.getId().intValue()))
@@ -343,19 +350,19 @@ class SharedDinnerResourceIT {
             .andExpect(jsonPath("$.costmin").value(DEFAULT_COSTMIN.doubleValue()))
             .andExpect(jsonPath("$.costmax").value(DEFAULT_COSTMAX.doubleValue()));
     }
-
     @Test
     @Transactional
-    void getNonExistingSharedDinner() throws Exception {
+    public void getNonExistingSharedDinner() throws Exception {
         // Get the sharedDinner
-        restSharedDinnerMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restSharedDinnerMockMvc.perform(get("/api/shared-dinners/{id}", Long.MAX_VALUE))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    void putNewSharedDinner() throws Exception {
+    public void updateSharedDinner() throws Exception {
         // Initialize the database
-        sharedDinnerRepository.saveAndFlush(sharedDinner);
+        sharedDinnerService.save(sharedDinner);
 
         int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
 
@@ -377,12 +384,9 @@ class SharedDinnerResourceIT {
             .costmin(UPDATED_COSTMIN)
             .costmax(UPDATED_COSTMAX);
 
-        restSharedDinnerMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, updatedSharedDinner.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedSharedDinner))
-            )
+        restSharedDinnerMockMvc.perform(put("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(updatedSharedDinner)))
             .andExpect(status().isOk());
 
         // Validate the SharedDinner in the database
@@ -403,22 +407,18 @@ class SharedDinnerResourceIT {
         assertThat(testSharedDinner.getCostmax()).isEqualTo(UPDATED_COSTMAX);
 
         // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository).save(testSharedDinner);
+        verify(mockSharedDinnerSearchRepository, times(2)).save(testSharedDinner);
     }
 
     @Test
     @Transactional
-    void putNonExistingSharedDinner() throws Exception {
+    public void updateNonExistingSharedDinner() throws Exception {
         int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, sharedDinner.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(sharedDinner))
-            )
+        restSharedDinnerMockMvc.perform(put("/api/shared-dinners")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
             .andExpect(status().isBadRequest());
 
         // Validate the SharedDinner in the database
@@ -431,221 +431,15 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void putWithIdMismatchSharedDinner() throws Exception {
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, count.incrementAndGet())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(sharedDinner))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
-    }
-
-    @Test
-    @Transactional
-    void putWithMissingIdPathParamSharedDinner() throws Exception {
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(sharedDinner)))
-            .andExpect(status().isMethodNotAllowed());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
-    }
-
-    @Test
-    @Transactional
-    void partialUpdateSharedDinnerWithPatch() throws Exception {
+    public void deleteSharedDinner() throws Exception {
         // Initialize the database
-        sharedDinnerRepository.saveAndFlush(sharedDinner);
-
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-
-        // Update the sharedDinner using partial update
-        SharedDinner partialUpdatedSharedDinner = new SharedDinner();
-        partialUpdatedSharedDinner.setId(sharedDinner.getId());
-
-        partialUpdatedSharedDinner
-            .createDate(UPDATED_CREATE_DATE)
-            .dinnerDate(UPDATED_DINNER_DATE)
-            .latitude(UPDATED_LATITUDE)
-            .address(UPDATED_ADDRESS)
-            .costmin(UPDATED_COSTMIN);
-
-        restSharedDinnerMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSharedDinner.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedSharedDinner))
-            )
-            .andExpect(status().isOk());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-        SharedDinner testSharedDinner = sharedDinnerList.get(sharedDinnerList.size() - 1);
-        assertThat(testSharedDinner.getCreateDate()).isEqualTo(UPDATED_CREATE_DATE);
-        assertThat(testSharedDinner.getUpdateDate()).isEqualTo(DEFAULT_UPDATE_DATE);
-        assertThat(testSharedDinner.getTitle()).isEqualTo(DEFAULT_TITLE);
-        assertThat(testSharedDinner.getSlogan()).isEqualTo(DEFAULT_SLOGAN);
-        assertThat(testSharedDinner.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testSharedDinner.getDinnerDate()).isEqualTo(UPDATED_DINNER_DATE);
-        assertThat(testSharedDinner.getHomePage()).isEqualTo(DEFAULT_HOME_PAGE);
-        assertThat(testSharedDinner.getLatitude()).isEqualTo(UPDATED_LATITUDE);
-        assertThat(testSharedDinner.getLongitude()).isEqualTo(DEFAULT_LONGITUDE);
-        assertThat(testSharedDinner.getAddress()).isEqualTo(UPDATED_ADDRESS);
-        assertThat(testSharedDinner.getCostmin()).isEqualTo(UPDATED_COSTMIN);
-        assertThat(testSharedDinner.getCostmax()).isEqualTo(DEFAULT_COSTMAX);
-    }
-
-    @Test
-    @Transactional
-    void fullUpdateSharedDinnerWithPatch() throws Exception {
-        // Initialize the database
-        sharedDinnerRepository.saveAndFlush(sharedDinner);
-
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-
-        // Update the sharedDinner using partial update
-        SharedDinner partialUpdatedSharedDinner = new SharedDinner();
-        partialUpdatedSharedDinner.setId(sharedDinner.getId());
-
-        partialUpdatedSharedDinner
-            .createDate(UPDATED_CREATE_DATE)
-            .updateDate(UPDATED_UPDATE_DATE)
-            .title(UPDATED_TITLE)
-            .slogan(UPDATED_SLOGAN)
-            .description(UPDATED_DESCRIPTION)
-            .dinnerDate(UPDATED_DINNER_DATE)
-            .homePage(UPDATED_HOME_PAGE)
-            .latitude(UPDATED_LATITUDE)
-            .longitude(UPDATED_LONGITUDE)
-            .address(UPDATED_ADDRESS)
-            .costmin(UPDATED_COSTMIN)
-            .costmax(UPDATED_COSTMAX);
-
-        restSharedDinnerMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedSharedDinner.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedSharedDinner))
-            )
-            .andExpect(status().isOk());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-        SharedDinner testSharedDinner = sharedDinnerList.get(sharedDinnerList.size() - 1);
-        assertThat(testSharedDinner.getCreateDate()).isEqualTo(UPDATED_CREATE_DATE);
-        assertThat(testSharedDinner.getUpdateDate()).isEqualTo(UPDATED_UPDATE_DATE);
-        assertThat(testSharedDinner.getTitle()).isEqualTo(UPDATED_TITLE);
-        assertThat(testSharedDinner.getSlogan()).isEqualTo(UPDATED_SLOGAN);
-        assertThat(testSharedDinner.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testSharedDinner.getDinnerDate()).isEqualTo(UPDATED_DINNER_DATE);
-        assertThat(testSharedDinner.getHomePage()).isEqualTo(UPDATED_HOME_PAGE);
-        assertThat(testSharedDinner.getLatitude()).isEqualTo(UPDATED_LATITUDE);
-        assertThat(testSharedDinner.getLongitude()).isEqualTo(UPDATED_LONGITUDE);
-        assertThat(testSharedDinner.getAddress()).isEqualTo(UPDATED_ADDRESS);
-        assertThat(testSharedDinner.getCostmin()).isEqualTo(UPDATED_COSTMIN);
-        assertThat(testSharedDinner.getCostmax()).isEqualTo(UPDATED_COSTMAX);
-    }
-
-    @Test
-    @Transactional
-    void patchNonExistingSharedDinner() throws Exception {
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
-
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, sharedDinner.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(sharedDinner))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
-    }
-
-    @Test
-    @Transactional
-    void patchWithIdMismatchSharedDinner() throws Exception {
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, count.incrementAndGet())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(sharedDinner))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
-    }
-
-    @Test
-    @Transactional
-    void patchWithMissingIdPathParamSharedDinner() throws Exception {
-        int databaseSizeBeforeUpdate = sharedDinnerRepository.findAll().size();
-        sharedDinner.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restSharedDinnerMockMvc
-            .perform(
-                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(sharedDinner))
-            )
-            .andExpect(status().isMethodNotAllowed());
-
-        // Validate the SharedDinner in the database
-        List<SharedDinner> sharedDinnerList = sharedDinnerRepository.findAll();
-        assertThat(sharedDinnerList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the SharedDinner in Elasticsearch
-        verify(mockSharedDinnerSearchRepository, times(0)).save(sharedDinner);
-    }
-
-    @Test
-    @Transactional
-    void deleteSharedDinner() throws Exception {
-        // Initialize the database
-        sharedDinnerRepository.saveAndFlush(sharedDinner);
+        sharedDinnerService.save(sharedDinner);
 
         int databaseSizeBeforeDelete = sharedDinnerRepository.findAll().size();
 
         // Delete the sharedDinner
-        restSharedDinnerMockMvc
-            .perform(delete(ENTITY_API_URL_ID, sharedDinner.getId()).accept(MediaType.APPLICATION_JSON))
+        restSharedDinnerMockMvc.perform(delete("/api/shared-dinners/{id}", sharedDinner.getId())
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -658,16 +452,15 @@ class SharedDinnerResourceIT {
 
     @Test
     @Transactional
-    void searchSharedDinner() throws Exception {
+    public void searchSharedDinner() throws Exception {
         // Configure the mock search repository
         // Initialize the database
-        sharedDinnerRepository.saveAndFlush(sharedDinner);
+        sharedDinnerService.save(sharedDinner);
         when(mockSharedDinnerSearchRepository.search(queryStringQuery("id:" + sharedDinner.getId()), PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(Collections.singletonList(sharedDinner), PageRequest.of(0, 1), 1));
 
         // Search the sharedDinner
-        restSharedDinnerMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + sharedDinner.getId()))
+        restSharedDinnerMockMvc.perform(get("/api/_search/shared-dinners?query=id:" + sharedDinner.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(sharedDinner.getId().intValue())))
