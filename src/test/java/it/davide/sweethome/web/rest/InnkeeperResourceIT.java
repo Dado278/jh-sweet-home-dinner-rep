@@ -1,5 +1,31 @@
 package it.davide.sweethome.web.rest;
 
+import it.davide.sweethome.JhSweetHomeDinnerApplicationApp;
+import it.davide.sweethome.domain.Innkeeper;
+import it.davide.sweethome.repository.InnkeeperRepository;
+import it.davide.sweethome.repository.search.InnkeeperSearchRepository;
+import it.davide.sweethome.service.InnkeeperService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
@@ -7,61 +33,27 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import it.davide.sweethome.IntegrationTest;
-import it.davide.sweethome.domain.Innkeeper;
 import it.davide.sweethome.domain.enumeration.Gender;
-import it.davide.sweethome.repository.InnkeeperRepository;
-import it.davide.sweethome.repository.search.InnkeeperSearchRepository;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
-
 /**
  * Integration tests for the {@link InnkeeperResource} REST controller.
  */
-@IntegrationTest
+@SpringBootTest(classes = JhSweetHomeDinnerApplicationApp.class)
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
-class InnkeeperResourceIT {
+public class InnkeeperResourceIT {
 
-    private static final String DEFAULT_NICKNAME = "AAAAAAAAAA";
-    private static final String UPDATED_NICKNAME = "BBBBBBBBBB";
-
-    private static final byte[] DEFAULT_AVATAR_IMAGE_BLOB = TestUtil.createByteArray(1, "0");
-    private static final byte[] UPDATED_AVATAR_IMAGE_BLOB = TestUtil.createByteArray(1, "1");
-    private static final String DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE = "image/jpg";
-    private static final String UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE = "image/png";
-
-    private static final String DEFAULT_AVATAR_TEXT_BLOB = "AAAAAAAAAA";
-    private static final String UPDATED_AVATAR_TEXT_BLOB = "BBBBBBBBBB";
+    private static final String DEFAULT_NICKNAME = "hmekec";
+    private static final String UPDATED_NICKNAME = "s9efhyh";
 
     private static final Long DEFAULT_FRESHMAN = 1L;
     private static final Long UPDATED_FRESHMAN = 2L;
 
-    private static final String DEFAULT_EMAIL = "jmhw-k@qnuo2.rxea.u";
-    private static final String UPDATED_EMAIL = "sw3c@91.yr.ixtzse";
+    private static final String DEFAULT_EMAIL = "m6ii0@p4umo.xg";
+    private static final String UPDATED_EMAIL = "tnp@t.qppuxf";
 
-    private static final String DEFAULT_PHONE_NUMBER = "378463861";
-    private static final String UPDATED_PHONE_NUMBER = "597804648186162";
+    private static final String DEFAULT_PHONE_NUMBER = "316900250959";
+    private static final String UPDATED_PHONE_NUMBER = "210641513";
 
     private static final Gender DEFAULT_GENDER = Gender.M;
     private static final Gender UPDATED_GENDER = Gender.F;
@@ -72,8 +64,8 @@ class InnkeeperResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final String DEFAULT_HOME_PAGE = "https://rpy2yg.np/";
-    private static final String UPDATED_HOME_PAGE = "77.loeJeS4HV";
+    private static final String DEFAULT_HOME_PAGE = "http://9sa3us.soqijJyi4/";
+    private static final String UPDATED_HOME_PAGE = "z9u8a..thdpu-0PGgpq";
 
     private static final String DEFAULT_LATITUDE = "AAAAAAAAAA";
     private static final String UPDATED_LATITUDE = "BBBBBBBBBB";
@@ -93,15 +85,11 @@ class InnkeeperResourceIT {
     private static final Instant DEFAULT_UPDATE_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_UPDATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final String ENTITY_API_URL = "/api/innkeepers";
-    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/_search/innkeepers";
-
-    private static Random random = new Random();
-    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     @Autowired
     private InnkeeperRepository innkeeperRepository;
+
+    @Autowired
+    private InnkeeperService innkeeperService;
 
     /**
      * This repository is mocked in the it.davide.sweethome.repository.search test package.
@@ -128,9 +116,6 @@ class InnkeeperResourceIT {
     public static Innkeeper createEntity(EntityManager em) {
         Innkeeper innkeeper = new Innkeeper()
             .nickname(DEFAULT_NICKNAME)
-            .avatarImageBlob(DEFAULT_AVATAR_IMAGE_BLOB)
-            .avatarImageBlobContentType(DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE)
-            .avatarTextBlob(DEFAULT_AVATAR_TEXT_BLOB)
             .freshman(DEFAULT_FRESHMAN)
             .email(DEFAULT_EMAIL)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
@@ -146,7 +131,6 @@ class InnkeeperResourceIT {
             .updateDate(DEFAULT_UPDATE_DATE);
         return innkeeper;
     }
-
     /**
      * Create an updated entity for this test.
      *
@@ -156,9 +140,6 @@ class InnkeeperResourceIT {
     public static Innkeeper createUpdatedEntity(EntityManager em) {
         Innkeeper innkeeper = new Innkeeper()
             .nickname(UPDATED_NICKNAME)
-            .avatarImageBlob(UPDATED_AVATAR_IMAGE_BLOB)
-            .avatarImageBlobContentType(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE)
-            .avatarTextBlob(UPDATED_AVATAR_TEXT_BLOB)
             .freshman(UPDATED_FRESHMAN)
             .email(UPDATED_EMAIL)
             .phoneNumber(UPDATED_PHONE_NUMBER)
@@ -182,11 +163,12 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void createInnkeeper() throws Exception {
+    public void createInnkeeper() throws Exception {
         int databaseSizeBeforeCreate = innkeeperRepository.findAll().size();
         // Create the Innkeeper
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isCreated());
 
         // Validate the Innkeeper in the database
@@ -194,9 +176,6 @@ class InnkeeperResourceIT {
         assertThat(innkeeperList).hasSize(databaseSizeBeforeCreate + 1);
         Innkeeper testInnkeeper = innkeeperList.get(innkeeperList.size() - 1);
         assertThat(testInnkeeper.getNickname()).isEqualTo(DEFAULT_NICKNAME);
-        assertThat(testInnkeeper.getAvatarImageBlob()).isEqualTo(DEFAULT_AVATAR_IMAGE_BLOB);
-        assertThat(testInnkeeper.getAvatarImageBlobContentType()).isEqualTo(DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE);
-        assertThat(testInnkeeper.getAvatarTextBlob()).isEqualTo(DEFAULT_AVATAR_TEXT_BLOB);
         assertThat(testInnkeeper.getFreshman()).isEqualTo(DEFAULT_FRESHMAN);
         assertThat(testInnkeeper.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testInnkeeper.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
@@ -217,15 +196,16 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void createInnkeeperWithExistingId() throws Exception {
+    public void createInnkeeperWithExistingId() throws Exception {
+        int databaseSizeBeforeCreate = innkeeperRepository.findAll().size();
+
         // Create the Innkeeper with an existing ID
         innkeeper.setId(1L);
 
-        int databaseSizeBeforeCreate = innkeeperRepository.findAll().size();
-
         // An entity with an existing ID cannot be created, so this API call must fail
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         // Validate the Innkeeper in the database
@@ -236,17 +216,20 @@ class InnkeeperResourceIT {
         verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
     }
 
+
     @Test
     @Transactional
-    void checkNicknameIsRequired() throws Exception {
+    public void checkNicknameIsRequired() throws Exception {
         int databaseSizeBeforeTest = innkeeperRepository.findAll().size();
         // set the field null
         innkeeper.setNickname(null);
 
         // Create the Innkeeper, which fails.
 
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
@@ -255,15 +238,17 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void checkEmailIsRequired() throws Exception {
+    public void checkEmailIsRequired() throws Exception {
         int databaseSizeBeforeTest = innkeeperRepository.findAll().size();
         // set the field null
         innkeeper.setEmail(null);
 
         // Create the Innkeeper, which fails.
 
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
@@ -272,15 +257,17 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void checkPhoneNumberIsRequired() throws Exception {
+    public void checkPhoneNumberIsRequired() throws Exception {
         int databaseSizeBeforeTest = innkeeperRepository.findAll().size();
         // set the field null
         innkeeper.setPhoneNumber(null);
 
         // Create the Innkeeper, which fails.
 
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
@@ -289,15 +276,17 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void checkDescriptionIsRequired() throws Exception {
+    public void checkDescriptionIsRequired() throws Exception {
         int databaseSizeBeforeTest = innkeeperRepository.findAll().size();
         // set the field null
         innkeeper.setDescription(null);
 
         // Create the Innkeeper, which fails.
 
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
@@ -306,15 +295,17 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void checkAddressIsRequired() throws Exception {
+    public void checkAddressIsRequired() throws Exception {
         int databaseSizeBeforeTest = innkeeperRepository.findAll().size();
         // set the field null
         innkeeper.setAddress(null);
 
         // Create the Innkeeper, which fails.
 
-        restInnkeeperMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
+
+        restInnkeeperMockMvc.perform(post("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
@@ -323,20 +314,16 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void getAllInnkeepers() throws Exception {
+    public void getAllInnkeepers() throws Exception {
         // Initialize the database
         innkeeperRepository.saveAndFlush(innkeeper);
 
         // Get all the innkeeperList
-        restInnkeeperMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
+        restInnkeeperMockMvc.perform(get("/api/innkeepers?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(innkeeper.getId().intValue())))
             .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME)))
-            .andExpect(jsonPath("$.[*].avatarImageBlobContentType").value(hasItem(DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE)))
-            .andExpect(jsonPath("$.[*].avatarImageBlob").value(hasItem(Base64Utils.encodeToString(DEFAULT_AVATAR_IMAGE_BLOB))))
-            .andExpect(jsonPath("$.[*].avatarTextBlob").value(hasItem(DEFAULT_AVATAR_TEXT_BLOB.toString())))
             .andExpect(jsonPath("$.[*].freshman").value(hasItem(DEFAULT_FRESHMAN.intValue())))
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
@@ -351,23 +338,19 @@ class InnkeeperResourceIT {
             .andExpect(jsonPath("$.[*].createDate").value(hasItem(DEFAULT_CREATE_DATE.toString())))
             .andExpect(jsonPath("$.[*].updateDate").value(hasItem(DEFAULT_UPDATE_DATE.toString())));
     }
-
+    
     @Test
     @Transactional
-    void getInnkeeper() throws Exception {
+    public void getInnkeeper() throws Exception {
         // Initialize the database
         innkeeperRepository.saveAndFlush(innkeeper);
 
         // Get the innkeeper
-        restInnkeeperMockMvc
-            .perform(get(ENTITY_API_URL_ID, innkeeper.getId()))
+        restInnkeeperMockMvc.perform(get("/api/innkeepers/{id}", innkeeper.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(innkeeper.getId().intValue()))
             .andExpect(jsonPath("$.nickname").value(DEFAULT_NICKNAME))
-            .andExpect(jsonPath("$.avatarImageBlobContentType").value(DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE))
-            .andExpect(jsonPath("$.avatarImageBlob").value(Base64Utils.encodeToString(DEFAULT_AVATAR_IMAGE_BLOB)))
-            .andExpect(jsonPath("$.avatarTextBlob").value(DEFAULT_AVATAR_TEXT_BLOB.toString()))
             .andExpect(jsonPath("$.freshman").value(DEFAULT_FRESHMAN.intValue()))
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
@@ -382,19 +365,19 @@ class InnkeeperResourceIT {
             .andExpect(jsonPath("$.createDate").value(DEFAULT_CREATE_DATE.toString()))
             .andExpect(jsonPath("$.updateDate").value(DEFAULT_UPDATE_DATE.toString()));
     }
-
     @Test
     @Transactional
-    void getNonExistingInnkeeper() throws Exception {
+    public void getNonExistingInnkeeper() throws Exception {
         // Get the innkeeper
-        restInnkeeperMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restInnkeeperMockMvc.perform(get("/api/innkeepers/{id}", Long.MAX_VALUE))
+            .andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    void putNewInnkeeper() throws Exception {
+    public void updateInnkeeper() throws Exception {
         // Initialize the database
-        innkeeperRepository.saveAndFlush(innkeeper);
+        innkeeperService.save(innkeeper);
 
         int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
 
@@ -404,9 +387,6 @@ class InnkeeperResourceIT {
         em.detach(updatedInnkeeper);
         updatedInnkeeper
             .nickname(UPDATED_NICKNAME)
-            .avatarImageBlob(UPDATED_AVATAR_IMAGE_BLOB)
-            .avatarImageBlobContentType(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE)
-            .avatarTextBlob(UPDATED_AVATAR_TEXT_BLOB)
             .freshman(UPDATED_FRESHMAN)
             .email(UPDATED_EMAIL)
             .phoneNumber(UPDATED_PHONE_NUMBER)
@@ -421,12 +401,9 @@ class InnkeeperResourceIT {
             .createDate(UPDATED_CREATE_DATE)
             .updateDate(UPDATED_UPDATE_DATE);
 
-        restInnkeeperMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, updatedInnkeeper.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedInnkeeper))
-            )
+        restInnkeeperMockMvc.perform(put("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(updatedInnkeeper)))
             .andExpect(status().isOk());
 
         // Validate the Innkeeper in the database
@@ -434,9 +411,6 @@ class InnkeeperResourceIT {
         assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
         Innkeeper testInnkeeper = innkeeperList.get(innkeeperList.size() - 1);
         assertThat(testInnkeeper.getNickname()).isEqualTo(UPDATED_NICKNAME);
-        assertThat(testInnkeeper.getAvatarImageBlob()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB);
-        assertThat(testInnkeeper.getAvatarImageBlobContentType()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE);
-        assertThat(testInnkeeper.getAvatarTextBlob()).isEqualTo(UPDATED_AVATAR_TEXT_BLOB);
         assertThat(testInnkeeper.getFreshman()).isEqualTo(UPDATED_FRESHMAN);
         assertThat(testInnkeeper.getEmail()).isEqualTo(UPDATED_EMAIL);
         assertThat(testInnkeeper.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
@@ -452,22 +426,18 @@ class InnkeeperResourceIT {
         assertThat(testInnkeeper.getUpdateDate()).isEqualTo(UPDATED_UPDATE_DATE);
 
         // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository).save(testInnkeeper);
+        verify(mockInnkeeperSearchRepository, times(2)).save(testInnkeeper);
     }
 
     @Test
     @Transactional
-    void putNonExistingInnkeeper() throws Exception {
+    public void updateNonExistingInnkeeper() throws Exception {
         int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, innkeeper.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(innkeeper))
-            )
+        restInnkeeperMockMvc.perform(put("/api/innkeepers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(innkeeper)))
             .andExpect(status().isBadRequest());
 
         // Validate the Innkeeper in the database
@@ -480,240 +450,15 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void putWithIdMismatchInnkeeper() throws Exception {
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(
-                put(ENTITY_API_URL_ID, count.incrementAndGet())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(innkeeper))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
-    }
-
-    @Test
-    @Transactional
-    void putWithMissingIdPathParamInnkeeper() throws Exception {
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(innkeeper)))
-            .andExpect(status().isMethodNotAllowed());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
-    }
-
-    @Test
-    @Transactional
-    void partialUpdateInnkeeperWithPatch() throws Exception {
+    public void deleteInnkeeper() throws Exception {
         // Initialize the database
-        innkeeperRepository.saveAndFlush(innkeeper);
-
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-
-        // Update the innkeeper using partial update
-        Innkeeper partialUpdatedInnkeeper = new Innkeeper();
-        partialUpdatedInnkeeper.setId(innkeeper.getId());
-
-        partialUpdatedInnkeeper
-            .nickname(UPDATED_NICKNAME)
-            .avatarImageBlob(UPDATED_AVATAR_IMAGE_BLOB)
-            .avatarImageBlobContentType(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .slogan(UPDATED_SLOGAN)
-            .homePage(UPDATED_HOME_PAGE)
-            .longitude(UPDATED_LONGITUDE)
-            .services(UPDATED_SERVICES)
-            .updateDate(UPDATED_UPDATE_DATE);
-
-        restInnkeeperMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedInnkeeper.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedInnkeeper))
-            )
-            .andExpect(status().isOk());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-        Innkeeper testInnkeeper = innkeeperList.get(innkeeperList.size() - 1);
-        assertThat(testInnkeeper.getNickname()).isEqualTo(UPDATED_NICKNAME);
-        assertThat(testInnkeeper.getAvatarImageBlob()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB);
-        assertThat(testInnkeeper.getAvatarImageBlobContentType()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE);
-        assertThat(testInnkeeper.getAvatarTextBlob()).isEqualTo(DEFAULT_AVATAR_TEXT_BLOB);
-        assertThat(testInnkeeper.getFreshman()).isEqualTo(DEFAULT_FRESHMAN);
-        assertThat(testInnkeeper.getEmail()).isEqualTo(DEFAULT_EMAIL);
-        assertThat(testInnkeeper.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testInnkeeper.getGender()).isEqualTo(DEFAULT_GENDER);
-        assertThat(testInnkeeper.getSlogan()).isEqualTo(UPDATED_SLOGAN);
-        assertThat(testInnkeeper.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testInnkeeper.getHomePage()).isEqualTo(UPDATED_HOME_PAGE);
-        assertThat(testInnkeeper.getLatitude()).isEqualTo(DEFAULT_LATITUDE);
-        assertThat(testInnkeeper.getLongitude()).isEqualTo(UPDATED_LONGITUDE);
-        assertThat(testInnkeeper.getAddress()).isEqualTo(DEFAULT_ADDRESS);
-        assertThat(testInnkeeper.getServices()).isEqualTo(UPDATED_SERVICES);
-        assertThat(testInnkeeper.getCreateDate()).isEqualTo(DEFAULT_CREATE_DATE);
-        assertThat(testInnkeeper.getUpdateDate()).isEqualTo(UPDATED_UPDATE_DATE);
-    }
-
-    @Test
-    @Transactional
-    void fullUpdateInnkeeperWithPatch() throws Exception {
-        // Initialize the database
-        innkeeperRepository.saveAndFlush(innkeeper);
-
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-
-        // Update the innkeeper using partial update
-        Innkeeper partialUpdatedInnkeeper = new Innkeeper();
-        partialUpdatedInnkeeper.setId(innkeeper.getId());
-
-        partialUpdatedInnkeeper
-            .nickname(UPDATED_NICKNAME)
-            .avatarImageBlob(UPDATED_AVATAR_IMAGE_BLOB)
-            .avatarImageBlobContentType(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE)
-            .avatarTextBlob(UPDATED_AVATAR_TEXT_BLOB)
-            .freshman(UPDATED_FRESHMAN)
-            .email(UPDATED_EMAIL)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .gender(UPDATED_GENDER)
-            .slogan(UPDATED_SLOGAN)
-            .description(UPDATED_DESCRIPTION)
-            .homePage(UPDATED_HOME_PAGE)
-            .latitude(UPDATED_LATITUDE)
-            .longitude(UPDATED_LONGITUDE)
-            .address(UPDATED_ADDRESS)
-            .services(UPDATED_SERVICES)
-            .createDate(UPDATED_CREATE_DATE)
-            .updateDate(UPDATED_UPDATE_DATE);
-
-        restInnkeeperMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, partialUpdatedInnkeeper.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedInnkeeper))
-            )
-            .andExpect(status().isOk());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-        Innkeeper testInnkeeper = innkeeperList.get(innkeeperList.size() - 1);
-        assertThat(testInnkeeper.getNickname()).isEqualTo(UPDATED_NICKNAME);
-        assertThat(testInnkeeper.getAvatarImageBlob()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB);
-        assertThat(testInnkeeper.getAvatarImageBlobContentType()).isEqualTo(UPDATED_AVATAR_IMAGE_BLOB_CONTENT_TYPE);
-        assertThat(testInnkeeper.getAvatarTextBlob()).isEqualTo(UPDATED_AVATAR_TEXT_BLOB);
-        assertThat(testInnkeeper.getFreshman()).isEqualTo(UPDATED_FRESHMAN);
-        assertThat(testInnkeeper.getEmail()).isEqualTo(UPDATED_EMAIL);
-        assertThat(testInnkeeper.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testInnkeeper.getGender()).isEqualTo(UPDATED_GENDER);
-        assertThat(testInnkeeper.getSlogan()).isEqualTo(UPDATED_SLOGAN);
-        assertThat(testInnkeeper.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testInnkeeper.getHomePage()).isEqualTo(UPDATED_HOME_PAGE);
-        assertThat(testInnkeeper.getLatitude()).isEqualTo(UPDATED_LATITUDE);
-        assertThat(testInnkeeper.getLongitude()).isEqualTo(UPDATED_LONGITUDE);
-        assertThat(testInnkeeper.getAddress()).isEqualTo(UPDATED_ADDRESS);
-        assertThat(testInnkeeper.getServices()).isEqualTo(UPDATED_SERVICES);
-        assertThat(testInnkeeper.getCreateDate()).isEqualTo(UPDATED_CREATE_DATE);
-        assertThat(testInnkeeper.getUpdateDate()).isEqualTo(UPDATED_UPDATE_DATE);
-    }
-
-    @Test
-    @Transactional
-    void patchNonExistingInnkeeper() throws Exception {
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
-
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, innkeeper.getId())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(innkeeper))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
-    }
-
-    @Test
-    @Transactional
-    void patchWithIdMismatchInnkeeper() throws Exception {
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(
-                patch(ENTITY_API_URL_ID, count.incrementAndGet())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(innkeeper))
-            )
-            .andExpect(status().isBadRequest());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
-    }
-
-    @Test
-    @Transactional
-    void patchWithMissingIdPathParamInnkeeper() throws Exception {
-        int databaseSizeBeforeUpdate = innkeeperRepository.findAll().size();
-        innkeeper.setId(count.incrementAndGet());
-
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInnkeeperMockMvc
-            .perform(
-                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(innkeeper))
-            )
-            .andExpect(status().isMethodNotAllowed());
-
-        // Validate the Innkeeper in the database
-        List<Innkeeper> innkeeperList = innkeeperRepository.findAll();
-        assertThat(innkeeperList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Innkeeper in Elasticsearch
-        verify(mockInnkeeperSearchRepository, times(0)).save(innkeeper);
-    }
-
-    @Test
-    @Transactional
-    void deleteInnkeeper() throws Exception {
-        // Initialize the database
-        innkeeperRepository.saveAndFlush(innkeeper);
+        innkeeperService.save(innkeeper);
 
         int databaseSizeBeforeDelete = innkeeperRepository.findAll().size();
 
         // Delete the innkeeper
-        restInnkeeperMockMvc
-            .perform(delete(ENTITY_API_URL_ID, innkeeper.getId()).accept(MediaType.APPLICATION_JSON))
+        restInnkeeperMockMvc.perform(delete("/api/innkeepers/{id}", innkeeper.getId())
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -726,23 +471,19 @@ class InnkeeperResourceIT {
 
     @Test
     @Transactional
-    void searchInnkeeper() throws Exception {
+    public void searchInnkeeper() throws Exception {
         // Configure the mock search repository
         // Initialize the database
-        innkeeperRepository.saveAndFlush(innkeeper);
+        innkeeperService.save(innkeeper);
         when(mockInnkeeperSearchRepository.search(queryStringQuery("id:" + innkeeper.getId()), PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(Collections.singletonList(innkeeper), PageRequest.of(0, 1), 1));
 
         // Search the innkeeper
-        restInnkeeperMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + innkeeper.getId()))
+        restInnkeeperMockMvc.perform(get("/api/_search/innkeepers?query=id:" + innkeeper.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(innkeeper.getId().intValue())))
             .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME)))
-            .andExpect(jsonPath("$.[*].avatarImageBlobContentType").value(hasItem(DEFAULT_AVATAR_IMAGE_BLOB_CONTENT_TYPE)))
-            .andExpect(jsonPath("$.[*].avatarImageBlob").value(hasItem(Base64Utils.encodeToString(DEFAULT_AVATAR_IMAGE_BLOB))))
-            .andExpect(jsonPath("$.[*].avatarTextBlob").value(hasItem(DEFAULT_AVATAR_TEXT_BLOB.toString())))
             .andExpect(jsonPath("$.[*].freshman").value(hasItem(DEFAULT_FRESHMAN.intValue())))
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
