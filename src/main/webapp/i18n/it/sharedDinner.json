@@ -1,0 +1,36 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "sharedDinner": {
+      "home": {
+        "title": "SharedDinners",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Genera un nuovo Shared Dinner",
+        "createOrEditLabel": "Genera o modifica un Shared Dinner",
+        "search": "Cerca Shared Dinner",
+        "notFound": "No Shared Dinners found"
+      },
+      "created": "&Egrave; stato generato un nuovo Shared Dinner con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Shared Dinner identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Shared Dinner con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Shared Dinner {{ id }}?"
+      },
+      "detail": {
+        "title": "Shared Dinner"
+      },
+      "id": "Id",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "title": "Title",
+      "slogan": "Slogan",
+      "description": "Description",
+      "homePage": "Home Page",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "address": "Address",
+      "costmin": "Costmin",
+      "costmax": "Costmax",
+      "innkeeper": "Innkeeper"
+    }
+  }
+}

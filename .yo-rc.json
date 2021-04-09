@@ -36,7 +36,9 @@
     "dtoSuffix": "DTO",
     "otherModules": [],
     "blueprints": [],
-    "prettierJava": true
+    "prettierJava": true,
+    "entities": ["Customer", "Innkeeper", "SharedDinner", "TakeAway"],
+    "lastLiquibaseTimestamp": 1617958712000
   },
   "git-provider": "GitHub",
   "git-company": "Dado278",

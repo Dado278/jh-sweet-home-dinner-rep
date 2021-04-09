@@ -1,0 +1,175 @@
+<div>
+  <h2 id="page-heading" data-cy="SharedDinnerHeading">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.home.title">Shared Dinners</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.home.refreshListLabel">Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-shared-dinner"
+        [routerLink]="['/shared-dinner/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span class="hidden-sm-down" jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.home.createLabel">
+          Create a new Shared Dinner
+        </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <form name="searchForm" class="form-inline">
+        <div class="input-group w-100 mt-3">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="currentSearch"
+            id="currentSearch"
+            name="currentSearch"
+            placeholder="{{ 'jhSweetHomeDinnerApplicationApp.sharedDinner.home.search' | translate }}"
+          />
+
+          <button class="input-group-append btn btn-info" (click)="search(currentSearch)">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+
+          <button class="input-group-append btn btn-danger" (click)="search('')" *ngIf="currentSearch">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="sharedDinners?.length === 0">
+    <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.home.notFound">No sharedDinners found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="sharedDinners && sharedDinners.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+          <th scope="col" jhiSortBy="id">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.id">Id</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="createDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.createDate">Create Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="updateDate">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.updateDate">Update Date</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="title">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.title">Title</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="slogan">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.slogan">Slogan</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="description">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.description">Description</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="homePage">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.homePage">Home Page</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="latitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.latitude">Latitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="longitude">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.longitude">Longitude</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="address">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.address">Address</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="costmin">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.costmin">Costmin</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="costmax">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.costmax">Costmax</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="innkeeper.id">
+            <span jhiTranslate="jhSweetHomeDinnerApplicationApp.sharedDinner.innkeeper">Innkeeper</span> <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sharedDinner of sharedDinners; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/shared-dinner', sharedDinner.id, 'view']">{{ sharedDinner.id }}</a>
+          </td>
+          <td>{{ sharedDinner.createDate | formatMediumDatetime }}</td>
+          <td>{{ sharedDinner.updateDate | formatMediumDatetime }}</td>
+          <td>{{ sharedDinner.title }}</td>
+          <td>{{ sharedDinner.slogan }}</td>
+          <td>{{ sharedDinner.description }}</td>
+          <td>{{ sharedDinner.homePage }}</td>
+          <td>{{ sharedDinner.latitude }}</td>
+          <td>{{ sharedDinner.longitude }}</td>
+          <td>{{ sharedDinner.address }}</td>
+          <td>{{ sharedDinner.costmin }}</td>
+          <td>{{ sharedDinner.costmax }}</td>
+          <td>
+            <div *ngIf="sharedDinner.innkeeper">
+              <a [routerLink]="['/innkeeper', sharedDinner.innkeeper?.id, 'view']">{{ sharedDinner.innkeeper?.id }}</a>
+            </div>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/shared-dinner', sharedDinner.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/shared-dinner', sharedDinner.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(sharedDinner)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="sharedDinners && sharedDinners.length > 0">
+    <div class="row justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+    </div>
+
+    <div class="row justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>
