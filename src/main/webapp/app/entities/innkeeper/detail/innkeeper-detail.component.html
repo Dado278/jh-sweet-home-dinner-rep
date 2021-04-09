@@ -1,0 +1,113 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="innkeeper">
+      <h2 data-cy="innkeeperDetailsHeading">
+        <span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.detail.title">Innkeeper</span>
+      </h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.id">Id</span></dt>
+        <dd>
+          <span>{{ innkeeper.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.nickname">Nickname</span></dt>
+        <dd>
+          <span>{{ innkeeper.nickname }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarImageBlob">Avatar Image Blob</span></dt>
+        <dd>
+          <div *ngIf="innkeeper.avatarImageBlob">
+            <a (click)="openFile(innkeeper.avatarImageBlob, innkeeper.avatarImageBlobContentType)">
+              <img
+                [src]="'data:' + innkeeper.avatarImageBlobContentType + ';base64,' + innkeeper.avatarImageBlob"
+                style="max-width: 100%"
+                alt="innkeeper image"
+              />
+            </a>
+            {{ innkeeper.avatarImageBlobContentType }}, {{ byteSize(innkeeper.avatarImageBlob) }}
+          </div>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarTextBlob">Avatar Text Blob</span></dt>
+        <dd>
+          <span>{{ innkeeper.avatarTextBlob }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.freshman">Freshman</span></dt>
+        <dd>
+          <span>{{ innkeeper.freshman }}</span>
+        </dd>
+        <dt>
+          <span
+            jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.email"
+            [ngbTooltip]="'jhSweetHomeDinnerApplicationApp.innkeeper.help.email' | translate"
+            >Email</span
+          >
+        </dt>
+        <dd>
+          <span>{{ innkeeper.email }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.phoneNumber">Phone Number</span></dt>
+        <dd>
+          <span>{{ innkeeper.phoneNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.gender">Gender</span></dt>
+        <dd>
+          <span jhiTranslate="{{ 'jhSweetHomeDinnerApplicationApp.Gender.' + innkeeper.gender }}">{{ innkeeper.gender }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.slogan">Slogan</span></dt>
+        <dd>
+          <span>{{ innkeeper.slogan }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.description">Description</span></dt>
+        <dd>
+          <span>{{ innkeeper.description }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.homePage">Home Page</span></dt>
+        <dd>
+          <span>{{ innkeeper.homePage }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.latitude">Latitude</span></dt>
+        <dd>
+          <span>{{ innkeeper.latitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.longitude">Longitude</span></dt>
+        <dd>
+          <span>{{ innkeeper.longitude }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.address">Address</span></dt>
+        <dd>
+          <span>{{ innkeeper.address }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.services">Services</span></dt>
+        <dd>
+          <span>{{ innkeeper.services }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.createDate">Create Date</span></dt>
+        <dd>
+          <span>{{ innkeeper.createDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.updateDate">Update Date</span></dt>
+        <dd>
+          <span>{{ innkeeper.updateDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.internalUser">Internal User</span></dt>
+        <dd>
+          <span>{{ innkeeper.internalUser?.id }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/innkeeper', innkeeper.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
