@@ -1,0 +1,45 @@
+{
+  "jhSweetHomeDinnerApplicationApp": {
+    "innkeeper": {
+      "home": {
+        "title": "Innkeepers",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Genera un nuovo Innkeeper",
+        "createOrEditLabel": "Genera o modifica un Innkeeper",
+        "search": "Cerca Innkeeper",
+        "notFound": "No Innkeepers found"
+      },
+      "created": "&Egrave; stato generato un nuovo Innkeeper con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Innkeeper identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Innkeeper con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Innkeeper {{ id }}?"
+      },
+      "detail": {
+        "title": "Innkeeper"
+      },
+      "id": "Id",
+      "nickname": "Nickname",
+      "avatarImageBlob": "Avatar Image Blob",
+      "avatarTextBlob": "Avatar Text Blob",
+      "freshman": "Freshman",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "gender": "Gender",
+      "slogan": "Slogan",
+      "description": "Description",
+      "homePage": "Home Page",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "address": "Address",
+      "services": "Services",
+      "createDate": "Create Date",
+      "updateDate": "Update Date",
+      "sharedDinner": "Shared Dinner",
+      "takeAway": "Take Away",
+      "help": {
+        "email": "matricola"
+      }
+    }
+  }
+}

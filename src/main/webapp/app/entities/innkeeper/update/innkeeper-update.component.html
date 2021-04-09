@@ -1,0 +1,344 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-innkeeper-heading"
+        data-cy="InnkeeperCreateUpdateHeading"
+        jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.home.createOrEditLabel"
+      >
+        Create or edit a Innkeeper
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="form-group" [hidden]="editForm.get('id')!.value == null">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.id" for="field_id">Id</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          <div *ngIf="editForm.get('id')!.invalid && (editForm.get('id')!.dirty || editForm.get('id')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('id')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+            <small class="form-text text-danger" [hidden]="!editForm.get('id')?.errors?.number" jhiTranslate="entity.validation.number">
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.nickname" for="field_nickname"
+            >Nickname</label
+          >
+          <input type="text" class="form-control" name="nickname" id="field_nickname" data-cy="nickname" formControlName="nickname" />
+          <div *ngIf="editForm.get('nickname')!.invalid && (editForm.get('nickname')!.dirty || editForm.get('nickname')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('nickname')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('nickname')?.errors?.pattern"
+              jhiTranslate="entity.validation.pattern"
+              [translateValues]="{ pattern: 'Nickname' }"
+            >
+              This field should follow pattern for "Nickname".
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label
+            class="form-control-label"
+            jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarImageBlob"
+            for="field_avatarImageBlob"
+            >Avatar Image Blob</label
+          >
+          <div>
+            <img
+              [src]="'data:' + editForm.get('avatarImageBlobContentType')!.value + ';base64,' + editForm.get('avatarImageBlob')!.value"
+              style="max-height: 100px"
+              *ngIf="editForm.get('avatarImageBlob')!.value"
+              alt="innkeeper image"
+            />
+            <div *ngIf="editForm.get('avatarImageBlob')!.value" class="form-text text-danger clearfix">
+              <span class="pull-left"
+                >{{ editForm.get('avatarImageBlobContentType')!.value }}, {{ byteSize(editForm.get('avatarImageBlob')!.value) }}</span
+              >
+              <button
+                type="button"
+                (click)="clearInputImage('avatarImageBlob', 'avatarImageBlobContentType', 'file_avatarImageBlob')"
+                class="btn btn-secondary btn-xs pull-right"
+              >
+                <fa-icon icon="times"></fa-icon>
+              </button>
+            </div>
+            <input
+              type="file"
+              id="file_avatarImageBlob"
+              data-cy="avatarImageBlob"
+              (change)="setFileData($event, 'avatarImageBlob', true)"
+              accept="image/*"
+              jhiTranslate="entity.action.addimage"
+            />
+          </div>
+          <input
+            type="hidden"
+            class="form-control"
+            name="avatarImageBlob"
+            id="field_avatarImageBlob"
+            data-cy="avatarImageBlob"
+            formControlName="avatarImageBlob"
+          />
+          <input
+            type="hidden"
+            class="form-control"
+            name="avatarImageBlobContentType"
+            id="field_avatarImageBlobContentType"
+            formControlName="avatarImageBlobContentType"
+          />
+          <div
+            *ngIf="
+              editForm.get('avatarImageBlob')!.invalid &&
+              (editForm.get('avatarImageBlob')!.dirty || editForm.get('avatarImageBlob')!.touched)
+            "
+          ></div>
+        </div>
+
+        <div class="form-group">
+          <label
+            class="form-control-label"
+            jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.avatarTextBlob"
+            for="field_avatarTextBlob"
+            >Avatar Text Blob</label
+          >
+          <textarea
+            class="form-control"
+            name="avatarTextBlob"
+            id="field_avatarTextBlob"
+            data-cy="avatarTextBlob"
+            formControlName="avatarTextBlob"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.freshman" for="field_freshman"
+            >Freshman</label
+          >
+          <input type="number" class="form-control" name="freshman" id="field_freshman" data-cy="freshman" formControlName="freshman" />
+          <div *ngIf="editForm.get('freshman')!.invalid && (editForm.get('freshman')!.dirty || editForm.get('freshman')!.touched)">
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('freshman')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label
+            class="form-control-label"
+            jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.email"
+            for="field_email"
+            [ngbTooltip]="'jhSweetHomeDinnerApplicationApp.innkeeper.help.email' | translate"
+            >Email</label
+          >
+          <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
+          <div *ngIf="editForm.get('email')!.invalid && (editForm.get('email')!.dirty || editForm.get('email')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('email')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('email')?.errors?.pattern"
+              jhiTranslate="entity.validation.pattern"
+              [translateValues]="{ pattern: 'Email' }"
+            >
+              This field should follow pattern for "Email".
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.phoneNumber" for="field_phoneNumber"
+            >Phone Number</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="phoneNumber"
+            id="field_phoneNumber"
+            data-cy="phoneNumber"
+            formControlName="phoneNumber"
+          />
+          <div *ngIf="editForm.get('phoneNumber')!.invalid && (editForm.get('phoneNumber')!.dirty || editForm.get('phoneNumber')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('phoneNumber')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('phoneNumber')?.errors?.pattern"
+              jhiTranslate="entity.validation.pattern"
+              [translateValues]="{ pattern: 'Phone Number' }"
+            >
+              This field should follow pattern for "Phone Number".
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.gender" for="field_gender"
+            >Gender</label
+          >
+          <select class="form-control" name="gender" formControlName="gender" id="field_gender" data-cy="gender">
+            <option [ngValue]="null">{{ 'jhSweetHomeDinnerApplicationApp.Gender.null' | translate }}</option>
+            <option value="M">{{ 'jhSweetHomeDinnerApplicationApp.Gender.M' | translate }}</option>
+            <option value="F">{{ 'jhSweetHomeDinnerApplicationApp.Gender.F' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.slogan" for="field_slogan"
+            >Slogan</label
+          >
+          <input type="text" class="form-control" name="slogan" id="field_slogan" data-cy="slogan" formControlName="slogan" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.description" for="field_description"
+            >Description</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
+          <div *ngIf="editForm.get('description')!.invalid && (editForm.get('description')!.dirty || editForm.get('description')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('description')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.homePage" for="field_homePage"
+            >Home Page</label
+          >
+          <input type="text" class="form-control" name="homePage" id="field_homePage" data-cy="homePage" formControlName="homePage" />
+          <div *ngIf="editForm.get('homePage')!.invalid && (editForm.get('homePage')!.dirty || editForm.get('homePage')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('homePage')?.errors?.pattern"
+              jhiTranslate="entity.validation.pattern"
+              [translateValues]="{ pattern: 'Home Page' }"
+            >
+              This field should follow pattern for "Home Page".
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.latitude" for="field_latitude"
+            >Latitude</label
+          >
+          <input type="text" class="form-control" name="latitude" id="field_latitude" data-cy="latitude" formControlName="latitude" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.longitude" for="field_longitude"
+            >Longitude</label
+          >
+          <input type="text" class="form-control" name="longitude" id="field_longitude" data-cy="longitude" formControlName="longitude" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.address" for="field_address"
+            >Address</label
+          >
+          <input type="text" class="form-control" name="address" id="field_address" data-cy="address" formControlName="address" />
+          <div *ngIf="editForm.get('address')!.invalid && (editForm.get('address')!.dirty || editForm.get('address')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('address')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.services" for="field_services"
+            >Services</label
+          >
+          <input type="text" class="form-control" name="services" id="field_services" data-cy="services" formControlName="services" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.createDate" for="field_createDate"
+            >Create Date</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_createDate"
+              data-cy="createDate"
+              type="datetime-local"
+              class="form-control"
+              name="createDate"
+              formControlName="createDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="jhSweetHomeDinnerApplicationApp.innkeeper.updateDate" for="field_updateDate"
+            >Update Date</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_updateDate"
+              data-cy="updateDate"
+              type="datetime-local"
+              class="form-control"
+              name="updateDate"
+              formControlName="updateDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
