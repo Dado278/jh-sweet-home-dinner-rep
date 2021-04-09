@@ -1,0 +1,96 @@
+
+entity Customer {
+	id Long required unique,
+	nickname String required pattern(/^[a-z0-9_-]{3,16}$/),
+    freshman Long, /** matricola */
+	email String pattern(/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/),
+	phoneNumber String required,
+    gender Gender,
+	createDate Instant,
+    updateDate Instant
+}
+
+entity Innkeeper {
+	id Long required unique,
+	nickname String required pattern(/^[a-z0-9_-]{3,16}$/),
+    freshman Long, /** matricola */
+	email String required pattern(/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/),
+	phoneNumber String required,
+    gender Gender,
+    slogan String,
+	description String required,
+    homePage String pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/),
+    latitude String,
+    longitude String,
+    address String required,
+    services String,
+    createDate Instant,
+    updateDate Instant
+}
+
+enum Gender {
+    M, F
+}
+
+entity SharedDinner {
+	id Long required unique,
+    createDate Instant,
+    updateDate Instant,
+    title String required, // dinner name
+    slogan String,
+	description String required,
+    homePage String pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/),
+    latitude String,
+    longitude String,
+    address String required,
+    costmin Double required,
+    costmax Double required
+}
+
+entity TakeAway {
+	id Long required unique,
+    createDate Instant,
+    updateDate Instant,
+    dish String required minlength(3) maxlength(50), // dish name
+	description String required,
+    ingredients String required,
+    allergens String required,
+    latitude String,
+    longitude String,
+    address String required,
+    costmin Double required,
+    costmax Double required,
+    tags String
+}
+
+relationship OneToOne {
+  Customer{internalUser} to User
+}
+
+relationship OneToOne {
+  Innkeeper{internalUser} to User
+}
+
+relationship OneToMany {
+	Innkeeper{sharedDinner} to SharedDinner{innkeeper}
+}
+
+relationship OneToMany {
+	Innkeeper{takeAway} to TakeAway{innkeeper}
+}
+
+// Set pagination options
+paginate SharedDinner, TakeAway with pagination
+paginate Customer, Innkeeper with infinite-scroll
+
+// Use Data Transfer Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl //except Employee, Job
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
+
+// info
+// https://code.tutsplus.com/it/tutorials/8-regular-expressions-you-should-know--net-6149
